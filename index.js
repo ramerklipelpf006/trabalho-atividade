@@ -87,7 +87,6 @@ const insertAtividade = async (request, response) => {
 const updateProduto = async (request, response) => {
     try {
         const {idAtividade, nmAtividade, dsAtividade, flAtivo, daAtividade} = request.body;
-        console.log({idAtividade, nmAtividade, dsAtividade, flAtivo, daAtividade});
 
         let sql = `UPDATE atividade
                    set 
