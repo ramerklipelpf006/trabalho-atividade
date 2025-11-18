@@ -14,10 +14,10 @@ if (isproduction) {
     pool = new Pool({
         user: 'postgres',
         host: 'localhost',
-        database: 'atividade',
+        database: 'atvidade',
         password: 'postgres',
         port: 5432
-    })
+    });
 }
 
-module.exports = {pool}
+module.exports = {pool};
