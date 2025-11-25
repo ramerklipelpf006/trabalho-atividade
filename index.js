@@ -8,9 +8,9 @@ app.use(express.json());
 app.use(express.urlencoded({extended: false}));
 app.use(cors())
 
-const getAllAtividades = async (request, response) => {
+const getAllatividades = async (request, response) => {
     try {
-        let sql = `SELECT *
+        let sql = `SELECT idatividade, nmatividade, dsatividade, flativo, to_char(daatividade, 'yyyy-MM-dd') daatividade
                    FROM atividade`;
         
         const results = await pool.query(sql);
@@ -27,16 +27,16 @@ const getAllAtividades = async (request, response) => {
     }
 }
 
-const getAtividade = async (request, response) => {
+const getatividade = async (request, response) => {
     try {
         
-        const idAtividade = parseInt(request.params.idAtividade);
+        const idatividade = parseInt(request.params.idatividade);
 
-        let sql = `SELECT *
+        let sql = `SELECT idatividade, nmatividade, dsatividade, flativo, to_char(daatividade, 'yyyy-MM-dd') daatividade
                    FROM atividade
-                   WHERE idAtividade = $1`;
+                   WHERE idatividade = $1`;
         
-        const results = await pool.query(sql, [idAtividade]);
+        const results = await pool.query(sql, [idatividade]);
         if (results.rows[0]) {
             return response.status(200).json(
                 {
@@ -58,13 +58,13 @@ const getAtividade = async (request, response) => {
 
 const insertAtividade = async (request, response) => {
     try {
-        const {nmAtividade, dsAtividade, flAtivo, daAtividade} = request.body;
-        
-        let sql = `INSERT INTO atividade (nmAtividade, dsAtividade, flAtivo, daAtividade)
+        const {nmatividade, dsatividade, flativo, daatividade} = request.body;
+
+        let sql = `INSERT INTO atividade (nmatividade, dsatividade, flativo, daatividade)
                    VALUES ($1, $2, $3, $4)
-                   RETURNING idAtividade, nmAtividade, dsAtividade, flAtivo, to_char(daAtividade, 'DD/MM/YYYY') AS daAtividade`;
+                   RETURNING idatividade, nmatividade, dsatividade, flativo, to_char(daatividade, 'yyyy-MM-dd') AS daatividade`;
         
-        const results = await pool.query(sql, [nmAtividade, dsAtividade, flAtivo, daAtividade]);
+        const results = await pool.query(sql, [nmatividade, dsatividade, flativo, daatividade]);
         if (results.rows[0]) {
             return response.status(200).json(
                 {
@@ -86,18 +86,18 @@ const insertAtividade = async (request, response) => {
 
 const updateProduto = async (request, response) => {
     try {
-        const {idAtividade, nmAtividade, dsAtividade, flAtivo, daAtividade} = request.body;
+        const {idatividade, nmatividade, dsatividade, flativo, daatividade} = request.body;
 
         let sql = `UPDATE atividade
                    set 
-                      nmAtividade = $1,
-                      dsAtividade = $2,
-                      flAtivo = $3,
-                      daAtividade = $4
-                   WHERE idAtividade = $5
-                   RETURNING idAtividade, nmAtividade, dsAtividade, flAtivo, to_char(daAtividade, 'DD/MM/YYYY') AS daAtividade`;
+                      nmatividade = $1,
+                      dsatividade = $2,
+                      flativo = $3,
+                      daatividade = $4
+                   WHERE idatividade = $5
+                   RETURNING idatividade, nmatividade, dsatividade, flativo, to_char(daatividade, 'yyyy-MM-dd') AS daatividade`;
         
-        const results = await pool.query(sql, [nmAtividade, dsAtividade, flAtivo, daAtividade, idAtividade]);
+        const results = await pool.query(sql, [nmatividade, dsatividade, flativo, daatividade, idatividade]);
         if (results.rows[0]) {
             return response.status(200).json(
                 {
@@ -117,15 +117,18 @@ const updateProduto = async (request, response) => {
     }
 }
 
-const deletaAtividade = async (request, response) => {
+const deletaatividade = async (request, response) => {
     try {
-        const {idAtividade} = request.params.idAtividade;
-
+        const idatividade = request.params.idatividade;
         let sql =  `DELETE 
                     FROM atividade
-                    WHERE idAtividade = $1`;
-        const results = await pool.query(sql, [idAtividade]);
-
+                    WHERE idatividade = $1`;
+        await pool.query(sql, [idatividade]);
+        console.log(
+            {'idatividade': idatividade,
+            'request.params.idatividade': request.params.idatividade,
+                'sql': sql,
+        })
         return response.status(200).json(
             {
                 status: "success",
@@ -142,8 +145,8 @@ const deletaAtividade = async (request, response) => {
     }
 }
 
-app.route("/atividade").get(getAllAtividades);
-app.route("/atividade/:idAtividade").get(getAtividade).post(updateProduto).put(insertAtividade).delete(deletaAtividade);
+app.route("/atividade").get(getAllatividades).post(insertAtividade).put(updateProduto);
+app.route("/atividade/:idatividade").get(getatividade).delete(deletaatividade);
 
 app.listen(3002, () => {
     console.log('rodando na 3002');
